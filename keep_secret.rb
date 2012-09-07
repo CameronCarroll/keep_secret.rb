@@ -24,7 +24,7 @@ require 'pry'
 require 'highline/import'
 
 require './secrets.rb'
-VERSION = '0.0.4'
+VERSION = '0.0.5'
 
 def parse_options
   opts = Trollop::options do
@@ -76,8 +76,7 @@ def main()
   elsif opts[:decrypt]
     filename = opts[:decrypt]
     password = prompt_for_password(:decrypt) unless opts[:password]
-    iv = ask("Please enter the IV (initialization vector) you were given when you encrypted this file.")
-    Secrets::decrypt(filename, password, iv)
+    Secrets::decrypt(filename, password)
   end
 
 end #main()

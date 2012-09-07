@@ -7,6 +7,7 @@
 
 require 'openssl'
 require 'digest/sha1'
+require 'digest/md5'
 
 module Secrets
   
@@ -30,12 +31,17 @@ module Secrets
       end
     end
 
-    puts "iv: #{iv}"
+    File.open("#{filename}.iv", "wb") do |iv_file|
+      iv_file << iv
+    end
+
+    puts "encrypted #{filename}"
   end
 
-  def Secrets.decrypt(filename, password, iv)
+  def Secrets.decrypt(filename, password)
     cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
     key = Digest::SHA1.hexdigest(password)
+    iv = File.read("#{filename}.iv")
     cipher.decrypt
     cipher.key = key
     cipher.iv = iv
@@ -49,7 +55,13 @@ module Secrets
         output_file << cipher.final
       end
     end
-    puts "decrypted: #{decrypted_data} \n"
+
+
+    puts "decrypted: #{filename} \n"
+  end
+
+  def Secrets.compare(filename1, filename2)
+
   end
 
 end
