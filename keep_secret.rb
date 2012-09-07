@@ -50,6 +50,7 @@ Usage:
   # opts.encrypt or opts.decrypt contains the filename string
   # opts.password contains the (optional) password argument.
   Trollop::die "must select either encryption or decryption and specify a file" unless opts[:encrypt] || opts[:decrypt]
+  Trollop::die "cannot select both encryption and decryption" if opts[:encrypt] && opts[:decrypt]
   Trollop::die :encrypt, "must reference an existing file" unless File.exist?(opts[:encrypt]) if opts[:encrypt]
   Trollop::die :decrypt, "must reference an existing file" unless File.exist?(opts[:decrypt]) if opts[:decrypt]
 
