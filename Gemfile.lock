@@ -2,6 +2,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     coderay (1.0.7)
+    highline (1.6.14)
     method_source (0.8)
     pry (0.9.10)
       coderay (~> 1.0.5)
@@ -14,5 +15,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  highline
   pry
   trollop

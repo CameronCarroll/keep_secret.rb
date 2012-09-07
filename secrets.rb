@@ -10,7 +10,7 @@ require 'digest/sha1'
 
 module Secrets
   
-  def encrypt(raw_data, password)
+  def Secrets.encrypt(filename, password)
     cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
     cipher.encrypt
 
@@ -26,7 +26,7 @@ module Secrets
     puts "encrypted: #{encrypted_data}\n"
   end
 
-  def decrypt(encrypted_data, key, iv)
+  def Secrets.decrypt(filename, password, iv)
     cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
     cipher.decrypt
     cipher.key = key

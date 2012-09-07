@@ -5,8 +5,13 @@
 #   Interface script for secrets.rb
 #
 #
+# Ideas:
+# 1. 'update' mode which decrypts a file, allows the user to update the contents and then re-encrypts the file and deletes
+# the temporary working file.
+# 2. automatically delete source file when encrypting after doing a checksum between a decrypted test and the raw file.
+
 # Usage:
-#   See options definition in main()
+#   See options definition in main() or use keep_secret.rb --help
 
 # Modifications:
 #   09/06/12 -- Initial Creation
@@ -16,7 +21,10 @@ require 'bundler/setup'
 
 require 'trollop'
 require 'pry'
-VERSION = '0.0.2'
+require 'highline/import'
+
+require './secrets.rb'
+VERSION = '0.0.3'
 
 def parse_options
   opts = Trollop::options do
@@ -24,7 +32,7 @@ def parse_options
     banner <<-EOS
 keep_secret is a simple program to encrypt/decrypt a single file. By default, decrypted files
 are deleted after 10 minutes so that you don't have to worry about manually re-encrypting your
-data unless updating it. 
+data unless updating it.
 
 Usage:
       keep_secret.rb [options] --encrypt/--decrypt <filename>
@@ -48,9 +56,29 @@ Usage:
   return opts
 end
 
-def main
+def prompt_for_password(operation)
+  inflection_flag = true if operation == :encrypt
+  puts 
+  password = ask("Please enter #{inflection_flag ? "a" : "the"} password for this volume:") { |q| 
+    q.echo = "*"
+  }
+  return password
+end
+
+def main()
   opts = parse_options()
-  
+  if opts[:encrypt]
+    filename = opts[:encrypt]
+    password = prompt_for_password(:encrypt) unless opts[:password]
+    Secrets::encrypt(filename, password)
+
+  elsif opts[:decrypt]
+    filename = opts[:decrypt]
+    password = prompt_for_password(:decrypt) unless opts[:password]
+    iv = ask("Please enter the IV (initialization vector) you were given when you encrypted this file.")
+    Secrets::decrypt(filename, password, iv)
+  end
+
 end #main()
 
 main
