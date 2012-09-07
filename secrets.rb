@@ -33,8 +33,6 @@ module Secrets
     File.open("#{filename}.iv", "wb") do |iv_file|
       iv_file << iv
     end
-
-    puts "encrypted #{filename}"
   end
 
   def Secrets.decrypt(filename, password)
@@ -47,16 +45,13 @@ module Secrets
 
     buffer = ""
     File.open("#{filename}.dec", "wb") do |output_file|
-      File.open("#{filename}.enc", "rb") do |input_file|
+      File.open("#{filename}", "rb") do |input_file|
         while input_file.read(4096, buffer)
           output_file << cipher.update(buffer)
         end
         output_file << cipher.final
       end
     end
-
-
-    puts "decrypted: #{filename} \n"
   end
 
   def Secrets.files_equal?(filename1, filename2)

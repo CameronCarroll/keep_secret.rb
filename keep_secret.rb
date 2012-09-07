@@ -22,6 +22,7 @@ require 'bundler/setup'
 require 'trollop'
 require 'pry'
 require 'highline/import'
+require 'fileutils'
 
 require './secrets.rb'
 VERSION = '0.0.6'
@@ -72,14 +73,15 @@ def main()
     filename = opts[:encrypt]
     password = prompt_for_password(:encrypt) unless opts[:password]
     Secrets::encrypt(filename, password)
+    FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
+    FileUtils::mv("#{filename}.enc", filename)
+    say("Encrypted #{filename}")
 
   elsif opts[:decrypt]
     filename = opts[:decrypt]
     password = prompt_for_password(:decrypt) unless opts[:password]
     Secrets::decrypt(filename, password)
-    unless Secrets::files_equal?(filename, "#{filename}.dec")
-      warning "Original file and decrypted file have different checksums."
-    end
+    say("Decrypted volume: #{filename} into permanent file: #{filename}.dec")
   end
 
 
