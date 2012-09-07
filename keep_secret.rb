@@ -28,17 +28,24 @@ are deleted after 10 minutes so that you don't have to worry about manually re-e
 data unless updating it. 
 
 Usage:
-      keep_secret.rb [options] <filename>
-      where [options] are:
-
+      keep_secret.rb [options] --encrypt/--decrypt <filename>
+      
+      Examples:
+        keep_secret.rb --password applebees --encrypt ~/secret_applebees_menu.txt
+        keep_secret.rb --decrypt ./nuclear_lunch_codes
+        
     EOS
 
-    opt :encrypt, "Encrypt this file."
-    opt :decrypt, "Decrypt this file."
+    opt :encrypt, "File to encrypt.", :type => :string
+    opt :decrypt, "File to decrypt.", :type => :string
     opt :password, "Password for encryption/decryption. (argument avoids prompt)", :type => :string
-    opt :filename, "File in question", :type => :string
   end
-  binding.pry
+  # opts.encrypt or opts.decrypt contains the filename string
+  # opts.password contains the (optional) password argument.
+  Trollop::die "must select either encryption or decryption and specify a file" unless opts[:encrypt] || opts[:decrypt]
+  Trollop::die :encrypt, "must reference an existing file" unless File.exist?(opts[:encrypt]) if opts[:encrypt]
+  Trollop::die :decrypt, "must reference an existing file" unless File.exist?(opts[:decrypt]) if opts[:decrypt]
+
 end
 
 main
