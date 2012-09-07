@@ -24,7 +24,7 @@ require 'pry'
 require 'highline/import'
 
 require './secrets.rb'
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 
 def parse_options
   opts = Trollop::options do
@@ -77,7 +77,12 @@ def main()
     filename = opts[:decrypt]
     password = prompt_for_password(:decrypt) unless opts[:password]
     Secrets::decrypt(filename, password)
+    unless Secrets::files_equal?(filename, "#{filename}.dec")
+      warning "Original file and decrypted file have different checksums."
+    end
   end
+
+
 
 end #main()
 

@@ -7,7 +7,6 @@
 
 require 'openssl'
 require 'digest/sha1'
-require 'digest/md5'
 
 module Secrets
   
@@ -60,8 +59,15 @@ module Secrets
     puts "decrypted: #{filename} \n"
   end
 
-  def Secrets.compare(filename1, filename2)
+  def Secrets.files_equal?(filename1, filename2)
+    file1_digest = Digest::SHA1.hexdigest(File.read(filename1))
+    file2_digest = Digest::SHA1.hexdigest(File.read(filename2))
 
+    if file1_digest == file2_digest
+      true
+    else
+      false
+    end
   end
 
 end
