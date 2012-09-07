@@ -16,10 +16,9 @@ require 'bundler/setup'
 
 require 'trollop'
 require 'pry'
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
-
-def main
+def parse_options
   opts = Trollop::options do
     version "keep_secret 0.0.1 (c) 2012 Cameron Carroll"
     banner <<-EOS
@@ -33,7 +32,7 @@ Usage:
       Examples:
         keep_secret.rb --password applebees --encrypt ~/secret_applebees_menu.txt
         keep_secret.rb --decrypt ./nuclear_lunch_codes
-        
+
     EOS
 
     opt :encrypt, "File to encrypt.", :type => :string
@@ -46,6 +45,12 @@ Usage:
   Trollop::die :encrypt, "must reference an existing file" unless File.exist?(opts[:encrypt]) if opts[:encrypt]
   Trollop::die :decrypt, "must reference an existing file" unless File.exist?(opts[:decrypt]) if opts[:decrypt]
 
+  return opts
 end
+
+def main
+  opts = parse_options()
+  
+end #main()
 
 main
