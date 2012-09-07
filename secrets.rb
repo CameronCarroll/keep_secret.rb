@@ -20,20 +20,35 @@ module Secrets
     cipher.key = key
     cipher.iv = iv
 
-    encrypted_data = cipher.update(raw_data)
-    encrypted_data << cipher.final
+    buffer = ""
+    File.open("#{filename}.enc", "wb") do |output_file|
+      File.open(filename, "rb") do |input_file|
+        while input_file.read(4096, buffer)
+          output_file << cipher.update(buffer)
+        end
+        output_file << cipher.final
+      end
+    end
 
-    puts "encrypted: #{encrypted_data}\n"
+    puts "iv: #{iv}"
   end
 
   def Secrets.decrypt(filename, password, iv)
     cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
+    key = Digest::SHA1.hexdigest(password)
     cipher.decrypt
     cipher.key = key
     cipher.iv = iv
 
-    decrypted_data = cipher.update(encrypted_data)
-    decrypted_data << cipher.final
+    buffer = ""
+    File.open("#{filename}.dec", "wb") do |output_file|
+      File.open("#{filename}.enc", "rb") do |input_file|
+        while input_file.read(4096, buffer)
+          output_file << cipher.update(buffer)
+        end
+        output_file << cipher.final
+      end
+    end
     puts "decrypted: #{decrypted_data} \n"
   end
 

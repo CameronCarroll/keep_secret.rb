@@ -24,7 +24,7 @@ require 'pry'
 require 'highline/import'
 
 require './secrets.rb'
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 def parse_options
   opts = Trollop::options do
