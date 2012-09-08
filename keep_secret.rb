@@ -25,7 +25,7 @@ require 'highline/import'
 require 'fileutils'
 
 require './secrets.rb'
-VERSION = '0.0.6'
+VERSION = '0.0.7'
 
 def parse_options
   opts = Trollop::options do
@@ -75,7 +75,10 @@ def main()
     Secrets::encrypt(filename, password)
     FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
     FileUtils::mv("#{filename}.enc", filename)
-    say("Encrypted #{filename}")
+    say("Encrypted #{filename}.")
+    say("File Summary:")
+    say("#{filename} --> encrypted version of original file")
+    say("#{filename}.iv --> initialization vector (required for decryption)")
 
   elsif opts[:decrypt]
     filename = opts[:decrypt]
