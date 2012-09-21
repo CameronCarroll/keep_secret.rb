@@ -20,6 +20,11 @@ module Secrets
     cipher.key = key
     cipher.iv = iv
 
+    # if filename comes in as a .enc, it'll make things ugly so lets treat it as no extension
+    if File.extname(filename) == ".enc" || File.extname(filename) == ".dec"
+      filename = filename[0..-5]
+    end
+
     buffer = ""
     File.open("#{filename}.enc", "wb") do |output_file|
       File.open(filename, "rb") do |input_file|
@@ -44,6 +49,12 @@ module Secrets
     cipher.iv = iv
 
     buffer = ""
+
+    # if filename comes in as a .enc, it'll make things ugly so lets treat it as no extension
+    if File.extname(filename) == ".enc" || File.extname(filename) == ".dec"
+      filename = filename[0..-5]
+    end
+
     File.open("#{filename}.dec", "wb") do |output_file|
       File.open("#{filename}", "rb") do |input_file|
         while input_file.read(4096, buffer)
@@ -52,6 +63,7 @@ module Secrets
         output_file << cipher.final
       end
     end
+
   end
 
   def Secrets.files_equal?(filename1, filename2)
