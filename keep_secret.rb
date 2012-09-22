@@ -4,17 +4,9 @@
 # Purpose: 
 #   Interface script for secrets.rb
 #
-#
-# Ideas:
-# 1. 'update' mode which decrypts a file, allows the user to update the contents and then re-encrypts the file and deletes
-# the temporary working file.
-# 2. automatically delete source file when encrypting after doing a checksum between a decrypted test and the raw file.
 
 # Usage:
 #   See options definition in main() or use keep_secret.rb --help
-
-# Modifications:
-#   09/06/12 -- Initial Creation
 
 require 'rubygems'
 require 'bundler/setup'
@@ -25,7 +17,7 @@ require 'highline/import'
 require 'fileutils'
 
 require_relative 'secrets.rb'
-VERSION = '0.0.7'
+VERSION = '0.1.0'
 
 def parse_options
   opts = Trollop::options do

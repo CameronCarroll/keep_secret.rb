@@ -2,9 +2,6 @@
 # Script File: secrets.rb
 # Purpose: A simple library for encrypting files or bits of text at a time.
 
-# Modifications:
-# 09/06/12 -- Initial Creation
-
 require 'openssl'
 require 'digest/sha1'
 

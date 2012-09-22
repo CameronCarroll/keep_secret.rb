@@ -1,14 +1,32 @@
 keep_secret
 ------------
 
-Version 0.0.x
+Version 0.1.x
 Cameron Carroll -- September 2012
 
 A program for time-managed encryption and decryption of files. Intended for hiding your secret documents and decrypting them for an alloted amount of time.
 
-Features to think about:
-* It should be 'volatile' by default, which means that working files will be deleted as the user reaches each stage: When encrypting a file, a .enc and .iv are generated and the original file should be deleted (with a prompt.) -- When decrypting a file, a .dec is generated but only lasts for 10 minutes. The .dec should only expire if it has a .enc and .iv in the same directory
+Purpose:
+------------
+Allows for quick command-line encryption/decryption for a single file at a time. Intended for use with the --update function, which decrypts a file for a specified time limit so that you can edit it and get on with your business without having to manually re-encrypt afterwards.
 
-Other things to think about:
-you should probably go through and make sure that every option combination works, make sure relative paths can get worked out and do some more rigorous testing in general.
-before doing that, however, you could probably use some rake tasks to generate and delete test files.
+Usage:
+------------
+      keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
+      
+      Examples:
+        keep_secret.rb --password applebees --encrypt ~/secret_applebees_menu.txt
+        keep_secret.rb --decrypt ./nuclear_lunch_codes
+        -or-
+        keep_secret.rb --update ./nuclear_lunch_codes --password=potatobum --length=10
+        echo "00 -- Atomic War Heads" >> ./nuclear_lunch_codes
+        (after 10 minutes, file is re-encrypted.)
+   --encrypt, -e <s>:   File to encrypt.
+   --decrypt, -d <s>:   File to decrypt.
+    --update, -u <s>:   File to decrypt for a lenth of time.
+    --length, -l <s>:   Length of time to decrypt a file for update. (Default 10) (default: 10)
+  --password, -p <s>:   Password for encryption/decryption. (argument avoids prompt)
+       --version, -v:   Print version and exit
+          --help, -h:   Show this message
+
+
