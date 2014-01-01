@@ -10,6 +10,13 @@ Purpose:
 ------------
 Allows for quick command-line encryption/decryption for a single file at a time. Intended for use with the --update function, which decrypts a file for a specified time limit so that you can edit it and get on with your business without having to manually re-encrypt afterwards.
 
+Requirements/Installation:
+--------------------------
+1. Have Ruby and Bundler gem installed.
+2. Clone or download repository to your favorite 'apps' path.
+3. Run 'bundle' in folder to install dependencies.
+4. Run from this path, or symlink to your favorite 'bin' path.
+
 Usage:
 ------------
       keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
