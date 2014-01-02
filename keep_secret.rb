@@ -23,21 +23,15 @@ def parse_options
   opts = Trollop::options do
     version "keep_secret #{VERSION} (c) 2012 Cameron Carroll"
     banner <<-EOS
-keep_secret is a simple program to encrypt/decrypt a single file. By default, decrypted files
-are deleted after 10 minutes so that you don't have to worry about manually re-encrypting your
-data unless updating it.
-
 Usage:
-      keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
+keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
       
-      Examples:
-        keep_secret.rb --password applebees --encrypt ~/secret_applebees_menu.txt
-        keep_secret.rb --decrypt ./nuclear_lunch_codes
-        -or-
-        keep_secret.rb --update ./nuclear_lunch_codes --password=potatobum --length=10
-        echo "00 -- Atomic War Heads" >> ./nuclear_lunch_codes
-        (after 10 minutes, file is re-encrypted.)
-
+Examples:
+    keep_secret.rb --password <password> --encrypt <filepath>
+    keep_secret.rb --decrypt <filepath>
+    -or-
+    keep_secret.rb --update <filepath> --password <password> --length <minutes>
+    (Proceed to work with file... after given time, file is re-encrypted.)
 
 
     EOS
