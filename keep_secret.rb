@@ -1,10 +1,13 @@
 #!/usr/bin/ruby
 
-# Script File: keep_secret
-# Purpose: 
-#   Interface script for secrets.rb
+# Script File: keep_secret.rb
+# Author: Cameron Carroll; Created September 2012
+# Last Updated: January 2014
 #
-
+# Purpose: 
+#   An interface to secrets.rb, which uses OpenSSL to encrypt/decrypt single files at a time.
+#   Features timed decryption so you don't have to worry about re-encrypting your working file.
+#
 # Usage:
 #   See options definition in main() or use keep_secret.rb --help
 
@@ -12,16 +15,15 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'trollop'
-require 'pry'
 require 'highline/import'
 require 'fileutils'
 
 require_relative 'secrets.rb'
-VERSION = '0.1.0'
+VERSION = '1.0.0'
 
 def parse_options
   opts = Trollop::options do
-    version "keep_secret #{VERSION} (c) 2012 Cameron Carroll"
+    version "keep_secret #{VERSION} (c) 2014 Cameron Carroll"
     banner <<-EOS
 Usage:
 keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
