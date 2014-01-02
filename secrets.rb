@@ -9,8 +9,11 @@
 require 'openssl'
 require 'digest/sha1'
 
+ENCRYPTED_EXTENSION = 'enc'
+DECRYPTED_EXTENSION = 'dec'
+
 module Secrets
-  
+
   def Secrets.encrypt(filename, password)
     cipher = OpenSSL::Cipher::Cipher.new("aes-256-cbc")
     cipher.encrypt
@@ -21,21 +24,10 @@ module Secrets
     cipher.key = key
     cipher.iv = iv
 
-    # if filename comes in as a .enc, it'll make things ugly so lets treat it as no extension
-    if File.extname(filename) == ".enc" || File.extname(filename) == ".dec"
-      filename = filename[0..-5]
-    end
+    filename = strip_filename(filename)
 
-    buffer = ""
-    File.open("#{filename}.enc", "wb") do |output_file|
-      File.open(filename, "rb") do |input_file|
-        while input_file.read(4096, buffer)
-          output_file << cipher.update(buffer)
-        end
-        output_file << cipher.final
-      end
-    end
-
+    update_file(cipher, filename, ENCRYPTED_EXTENSION)
+    
     File.open("#{filename}.iv", "wb") do |iv_file|
       iv_file << iv
     end
@@ -51,20 +43,9 @@ module Secrets
 
     buffer = ""
 
-    # if filename comes in as a .enc, it'll make things ugly so lets treat it as no extension
-    if File.extname(filename) == ".enc" || File.extname(filename) == ".dec"
-      filename = filename[0..-5]
-    end
-
-    File.open("#{filename}.dec", "wb") do |output_file|
-      File.open("#{filename}", "rb") do |input_file|
-        while input_file.read(4096, buffer)
-          output_file << cipher.update(buffer)
-        end
-        output_file << cipher.final
-      end
-    end
-
+    filename = strip_filename(filename)
+    
+    update_file(cipher, filename, DECRYPTED_EXTENSION)
   end
 
   def Secrets.files_equal?(filename1, filename2)
@@ -78,4 +59,26 @@ module Secrets
     end
   end
 
+end
+
+private
+
+def strip_filename(filename)
+  if File.extname(filename) == ".enc" || File.extname(filename) == ".dec"
+    filename[0..-5]
+  else
+    filename
+  end
+end
+
+def update_file(cipher, filename, extension)
+  buffer = ""
+  File.open("#{filename}.#{extension}", "wb") do |output_file|
+    File.open(filename, "rb") do |input_file|
+      while input_file.read(4096, buffer)
+        output_file << cipher.update(buffer)
+      end
+      output_file << cipher.final
+    end
+  end
 end
