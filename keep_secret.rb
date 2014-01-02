@@ -3,6 +3,7 @@
 # Script File: keep_secret.rb
 # Author: Cameron Carroll; Created September 2012
 # Last Updated: January 2014
+# Released under MIT License
 #
 # Purpose: 
 #   An interface to secrets.rb, which uses OpenSSL to encrypt/decrypt single files at a time.

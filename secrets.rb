@@ -1,6 +1,10 @@
-
 # Script File: secrets.rb
-# Purpose: A simple library for encrypting files or bits of text at a time.
+# Author: Cameron Carroll; Created in September 2012
+# Last Updated: January 2014
+# Released under MIT License
+#
+# Purpose: 
+#   A small library to encrypt/decrypt a single file using OpenSSL:aes-256-cbc
 
 require 'openssl'
 require 'digest/sha1'
