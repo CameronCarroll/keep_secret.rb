@@ -65,54 +65,47 @@ def prompt_for_password(operation)
   return password
 end
 
-def main()
-  opts = parse_options
+opts = parse_options
 
-  if opts[:encrypt]
-    filename = opts[:encrypt]
-    password = prompt_for_password(:encrypt) unless opts[:password]
-    password = opts[:password] if opts[:password]
-    Secrets::encrypt(filename, password)
-    FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
-    FileUtils::mv("#{filename}.enc", filename)
-    say("Encrypted #{filename}.")
-    say("File Summary:")
-    say("#{filename} --> encrypted version of original file")
-    say("#{filename}.iv --> initialization vector (required for decryption)")
+if opts[:encrypt]
+  filename = opts[:encrypt]
+  password = prompt_for_password(:encrypt) unless opts[:password]
+  password = opts[:password] if opts[:password]
+  Secrets::encrypt(filename, password)
+  FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
+  FileUtils::mv("#{filename}.enc", filename)
+  say("Encrypted #{filename}.")
+  say("File Summary:")
+  say("#{filename} --> encrypted version of original file")
+  say("#{filename}.iv --> initialization vector (required for decryption)")
 
-  elsif opts[:decrypt]
-    filename = opts[:decrypt]
-    password = prompt_for_password(:decrypt) unless opts[:password]
-    password = opts[:password] if opts[:password]
-    Secrets::decrypt(filename, password)
-    say("Decrypted volume: #{filename} permanently.")
+elsif opts[:decrypt]
+  filename = opts[:decrypt]
+  password = prompt_for_password(:decrypt) unless opts[:password]
+  password = opts[:password] if opts[:password]
+  Secrets::decrypt(filename, password)
+  say("Decrypted volume: #{filename} permanently.")
 
-  elsif opts[:update]
-    filename = opts[:update]
-    password = prompt_for_password(:decrypt) unless opts[:password]
-    password = opts[:password] if opts[:password]
-    length = opts[:length] ? opts[:length] : '10'
-    Secrets::decrypt(filename, password)
-    say("Decrypted volume: #{filename} for #{length} minutes.")
-    say("Please edit your file now...")
-    say("(Please don't interrupt this terminal.)")
-    sleep((length.to_f/2) * 60)
-    say("#{length.to_f/2} minutes before automatic re-encryption")
-    sleep((length.to_f/2) * 60)
-    say("Locking volume: #{filename}...")
-    Secrets::encrypt("#{filename}.dec", password)
-    FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv") && File.exist?("#{filename}")
-    FileUtils::rm("#{filename}.dec") if File.exist?("#{filename}.dec")
-    FileUtils::mv("#{filename}.enc", filename)
-    say("Encrypted #{filename}.")
-    say("File Summary:")
-    say("#{filename} --> encrypted version of original file")
-    say("#{filename}.iv --> initialization vector (required for decryption)")
+elsif opts[:update]
+  filename = opts[:update]
+  password = prompt_for_password(:decrypt) unless opts[:password]
+  password = opts[:password] if opts[:password]
+  length = opts[:length] ? opts[:length] : '10'
+  Secrets::decrypt(filename, password)
+  say("Decrypted volume: #{filename} for #{length} minutes.")
+  say("Please edit your file now...")
+  say("(Please don't interrupt this terminal.)")
+  sleep((length.to_f/2) * 60)
+  say("#{length.to_f/2} minutes before automatic re-encryption")
+  sleep((length.to_f/2) * 60)
+  say("Locking volume: #{filename}...")
+  Secrets::encrypt("#{filename}.dec", password)
+  FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv") && File.exist?("#{filename}")
+  FileUtils::rm("#{filename}.dec") if File.exist?("#{filename}.dec")
+  FileUtils::mv("#{filename}.enc", filename)
+  say("Encrypted #{filename}.")
+  say("File Summary:")
+  say("#{filename} --> encrypted version of original file")
+  say("#{filename}.iv --> initialization vector (required for decryption)")
 
-  end
-
-
-
-end #main()
-
-main
+end
