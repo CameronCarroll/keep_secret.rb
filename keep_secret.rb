@@ -2,7 +2,7 @@
 
 # Script File: keep_secret.rb
 # Author: Cameron Carroll; Created September 2012
-# Last Updated: January 2014
+# Last Updated: July 2014
 # Released under MIT License
 #
 # Purpose: 
@@ -10,7 +10,7 @@
 #   Features timed decryption so you don't have to worry about re-encrypting your working file.
 #
 # Usage:
-#   See options definition in main() or use keep_secret.rb --help
+#   See options definition below or invoke keep_secret.rb --help
 
 require 'rubygems'
 require 'bundler/setup'
@@ -19,8 +19,10 @@ require 'trollop'
 require 'highline/import'
 require 'fileutils'
 
+require 'pry'
+
 require_relative 'secrets.rb'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 def parse_options
   opts = Trollop::options do
@@ -41,19 +43,32 @@ Examples:
 
     opt :encrypt, "File to encrypt.", :type => :string
     opt :decrypt, "File to decrypt.", :type => :string
-    opt :update, "File to decrypt for a lenth of time.", :type => :string
-    opt :length, "Length of time to decrypt a file for update. (Default 10)", :type => :string, :default => '10'
-    opt :password, "Password for encryption/decryption. (argument avoids prompt)", :type => :string
+    opt :update, "File to decrypt temporarily.", :type => :string
+    opt :length, "Length of time file should be decrypted. (Default 10)", :type => :string, :default => '10'
+    opt :password, "Password for encryption/decryption. (avoids prompt)", :type => :string
   end
   # opts.encrypt or opts.decrypt contains the filename string
   # opts.password contains the (optional) password argument.
   Trollop::die "must select either encryption or decryption and specify a file" unless opts[:encrypt] || opts[:decrypt] || opts[:update]
-  Trollop::die "cannot select both encryption and decryption" if opts[:encrypt] && opts[:decrypt] && opts[:update]
+  Trollop::die "must either encrypt or decrypt" if opts[:encrypt] && opts[:decrypt] && opts[:update]
   Trollop::die :encrypt, "must reference an existing file" unless File.exist?(opts[:encrypt]) if opts[:encrypt]
   Trollop::die :decrypt, "must reference an existing file" unless File.exist?(opts[:decrypt]) if opts[:decrypt]
-  Trollop::die :length, "must be a positive integer representing time in minutes" unless opts[:length].to_i > 0 || opts[:length].to_i.modulo(1) != 0
+  Trollop::die :length, "must be a positive integer time (in minutes)" unless opts[:length].to_i > 0 || opts[:length].to_i.modulo(1) != 0
+
+  opts[:filename] = opts[:encrypt] || opts[:decrypt] || opts[:update]
 
   return opts
+end
+
+# HELPER METHODS:
+# --------------
+
+def get_password(opts, operation)
+  if opts[:password]
+    opts[:password]
+  else
+    prompt_for_password operation
+  end
 end
 
 def prompt_for_password(operation)
@@ -65,47 +80,47 @@ def prompt_for_password(operation)
   return password
 end
 
+def file_summary(filename)
+  say "Encrypted #{filename}."
+  say "File Summary:"
+  say "#{filename} --> encrypted version of original file"
+  say "#{filename}.iv --> initialization vector (required for decryption)"
+end
+
+# APPLICATION LOGIC:
+# ------------------
 opts = parse_options
 
 if opts[:encrypt]
-  filename = opts[:encrypt]
-  password = prompt_for_password(:encrypt) unless opts[:password]
-  password = opts[:password] if opts[:password]
-  Secrets::encrypt(filename, password)
-  FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
-  FileUtils::mv("#{filename}.enc", filename)
-  say("Encrypted #{filename}.")
-  say("File Summary:")
-  say("#{filename} --> encrypted version of original file")
-  say("#{filename}.iv --> initialization vector (required for decryption)")
-
+  operation = :encrypt
 elsif opts[:decrypt]
-  filename = opts[:decrypt]
-  password = prompt_for_password(:decrypt) unless opts[:password]
-  password = opts[:password] if opts[:password]
-  Secrets::decrypt(filename, password)
-  say("Decrypted volume: #{filename} permanently.")
-
+  operation = :decrypt
 elsif opts[:update]
-  filename = opts[:update]
-  password = prompt_for_password(:decrypt) unless opts[:password]
-  password = opts[:password] if opts[:password]
+  operation = :decrypt
   length = opts[:length] ? opts[:length] : '10'
-  Secrets::decrypt(filename, password)
-  say("Decrypted volume: #{filename} for #{length} minutes.")
-  say("Please edit your file now...")
-  say("(Please don't interrupt this terminal.)")
-  sleep((length.to_f/2) * 60)
-  say("#{length.to_f/2} minutes before automatic re-encryption")
-  sleep((length.to_f/2) * 60)
-  say("Locking volume: #{filename}...")
-  Secrets::encrypt("#{filename}.dec", password)
-  FileUtils::rm(filename) if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv") && File.exist?("#{filename}")
-  FileUtils::rm("#{filename}.dec") if File.exist?("#{filename}.dec")
-  FileUtils::mv("#{filename}.enc", filename)
-  say("Encrypted #{filename}.")
-  say("File Summary:")
-  say("#{filename} --> encrypted version of original file")
-  say("#{filename}.iv --> initialization vector (required for decryption)")
+end
 
+filename = opts[:filename]
+password = get_password(opts, operation)
+Secrets.send(operation, filename, password)
+
+if opts[:encrypt]
+  FileUtils.rm filename if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
+  FileUtils.mv "#{filename}.enc", filename
+  file_summary(filename)
+elsif opts[:decrypt]
+  say "Decrypted volume (#{filename}) permanently."
+elsif opts[:update]
+  say "Decrypted volume (#{filename}) for #{length} minutes."
+  say "Please edit your file now..."
+  say "(But don't interrupt this terminal process!)"
+  sleep length.to_f/2 * 60
+  say "#{length.to_f/2} minutes before automatic re-encryption"
+  sleep length.to_f/2 * 60
+  say "Locking volume: #{filename}..."
+  Secrets::encrypt "#{filename}.dec", password
+  FileUtils::rm filename if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv") && File.exist?("#{filename}")
+  FileUtils::rm "#{filename}.dec" if File.exist?("#{filename}.dec")
+  FileUtils::mv "#{filename}.enc", filename
+  file_summary(filename)
 end
