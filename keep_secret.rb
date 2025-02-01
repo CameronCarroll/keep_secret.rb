@@ -2,10 +2,10 @@
 
 # Script File: keep_secret.rb
 # Author: Cameron Carroll; Created September 2012
-# Last Updated: July 2014
+# Last Updated: July 2024
 # Released under MIT License
 #
-# Purpose: 
+# Purpose:
 #   An interface to secrets.rb, which uses OpenSSL to encrypt/decrypt single files at a time.
 #   Features timed decryption so you don't have to worry about re-encrypting your working file.
 #
@@ -19,18 +19,16 @@ require 'trollop'
 require 'highline/import'
 require 'fileutils'
 
-require 'pry'
-
 require_relative 'secrets.rb'
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 def parse_options
   opts = Trollop::options do
-    version "keep_secret #{VERSION} (c) 2014 Cameron Carroll"
+    version "keep_secret #{VERSION} (c) 2024 Cameron Carroll"
     banner <<-EOS
 Usage:
 keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
-      
+
 Examples:
     keep_secret.rb --password <password> --encrypt <filepath>
     keep_secret.rb --decrypt <filepath>
@@ -44,7 +42,7 @@ Examples:
     opt :encrypt, "File to encrypt.", :type => :string
     opt :decrypt, "File to decrypt.", :type => :string
     opt :update, "File to decrypt temporarily.", :type => :string
-    opt :length, "Length of time file should be decrypted. (Default 10)", :type => :string, :default => '10'
+    opt :length, "Length of time file should be decrypted (in minutes?). (Default 10 [min?])", :type => :string, :default => '10'
     opt :password, "Password for encryption/decryption. (avoids prompt)", :type => :string
   end
   # opts.encrypt or opts.decrypt contains the filename string
@@ -73,8 +71,8 @@ end
 
 def prompt_for_password(operation)
   inflection_flag = true if operation == :encrypt
-  puts 
-  password = ask("Please enter #{inflection_flag ? "a" : "the"} password for this volume:") { |q| 
+  puts
+  password = ask("Please enter #{inflection_flag ? "a" : "the"} password for this volume:") { |q|
     q.echo = "*"
   }
   return password
@@ -105,9 +103,7 @@ password = get_password(opts, operation)
 Secrets.send(operation, filename, password)
 
 if opts[:encrypt]
-  FileUtils.rm filename if File.exist?("#{filename}.enc") && File.exist?("#{filename}.iv")
-  FileUtils.mv "#{filename}.enc", filename
-  file_summary(filename)
+  # If there is already an encrypted
 elsif opts[:decrypt]
   say "Decrypted volume (#{filename}) permanently."
 elsif opts[:update]

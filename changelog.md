@@ -1,0 +1,3 @@
+Changes at 10.0.2 (July 2024)
+* Removed Gemlock file to allow latest versions of gems to be used. Note, ignoring deprecarion of trollop gem...
+* 

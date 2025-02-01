@@ -1,4 +1,4 @@
-keep_secret v1.0.0
+keep_secret v1.0.2
 =================
 <br />
 A simple interface to OpenSSL:AES-256-CBC which features timed decryption. (Work on your file for a couple minutes and not worry about re-encrypting it.)
@@ -13,14 +13,14 @@ Requirements/Installation:
 Usage:
 ------------
     keep_secret.rb [options] --encrypt/--decrypt/--update <filename>
-      
+
     Examples:
         keep_secret.rb --password <password> --encrypt <filepath>
         keep_secret.rb --decrypt <filepath>
         -or-
         keep_secret.rb --update <filepath> --password <password> --length <minutes>
         (Proceed to work with file... after given time, file is re-encrypted.)
-        
+
     --encrypt, -e <path>    File to encrypt.
     --decrypt, -d <path>    File to decrypt.
     --update, -u <path>     File to decrypt for a lenth of time.
@@ -28,7 +28,7 @@ Usage:
     --password, -p <pw>     Password for encryption/decryption. (avoid prompt)
     --version, -v           Print version and exit
     --help, -h              Show this message
-    
+
 Author & License:
 -----------------
 * Created by Cameron Carroll in September 2012 <br />
